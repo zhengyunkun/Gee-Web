@@ -11,6 +11,7 @@ type HandlerFunc func(http.ResponseWriter, *http.Request)
 // Engine implement the interface of ServeHTTP
 type Engine struct {
 	router map[string]HandlerFunc
+	// map string to HandlerFunc
 }
 
 // New is the constructor of gee.Engine
@@ -24,6 +25,8 @@ func (engine *Engine) addRoute(method string, pattern string, handler HandlerFun
 }
 
 // GET defines the method to add GET request
+// pattern is the url path like "/" or "/hello"
+// HandlerFunc is the function to handle the request
 func (engine *Engine) GET(pattern string, handler HandlerFunc) {
 	engine.addRoute("GET", pattern, handler)
 }
@@ -34,6 +37,8 @@ func (engine *Engine) POST(pattern string, handler HandlerFunc) {
 }
 
 // Run defines the method to start a http server
+// addr is the server address like ":8080"
+// the (err error) is the return value of ListenAndServe
 func (engine *Engine) RUN(addr string) (err error) {
 	return http.ListenAndServe(addr, engine)
 }
@@ -42,6 +47,7 @@ func (engine *Engine) RUN(addr string) (err error) {
 func (engine *Engine) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 	key := req.Method + "-" + req.URL.Path
 	if handler, ok := engine.router[key]; ok {
+		// handler is a specific function to handle the request
 		handler(w, req)
 	} else {
 		fmt.Fprintf(w, "404 NOT FOUND: %s\n", req.URL)
