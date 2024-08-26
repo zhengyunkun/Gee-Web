@@ -2,7 +2,6 @@ package gee
 
 import (
 	"net/http"
-	"log"
 )
 
 // HandlerFunc defines the request handler used by gee
