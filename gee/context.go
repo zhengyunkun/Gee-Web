@@ -18,6 +18,9 @@ type Context struct {
 	Params			map[string]string
 	// Response Info
 	StatusCode 		int
+	// Middleware
+	handlers 		[]HandlerFunc	// store all the middleware
+	index 			int				// index of the current middleware
 }
 
 // constructor for Context, return a new Context object
@@ -27,7 +30,23 @@ func newContext(w http.ResponseWriter, req *http.Request) *Context {
 		Req: 			req,
 		Path: 			req.URL.Path,
 		Method: 		req.Method,
+		index:			-1, // means the middleware has not been executed
 	}
+}	
+
+// when the middleware is executed, the Next() function is called to execute the next middleware
+func (c *Context) Next() {
+	c.index ++
+	s := len(c.handlers)
+	for ; c.index < s; c.index++ {
+		c.handlers[c.index](c) // pass the context to the middleware and execute it
+	}
+}
+
+// Fail method is used to handle errors, it writes the error message to the response in JSON format
+func (c *Context) Fail(code int, err string) {
+	c.index = len(c.handlers) // skip all the other middlewares
+	c.JSON(code, H{"message": err})
 }
 
 func (c *Context) Param(key string) string {
