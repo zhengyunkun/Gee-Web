@@ -6,6 +6,7 @@ import (
 	"net/http"
 )
 
+// H is a map[string]interface{} for JSON
 type H map[string]interface{}
 
 type Context struct {
