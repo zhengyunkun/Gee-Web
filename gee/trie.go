@@ -37,6 +37,7 @@ func (n *node) matchChildren(part string) []*node {
 	return nodes
 }
 
+// 插入节点
 func (n *node) insert(pattern string, parts []string, height int) {
 	if (len(parts) == height) {
 		n.pattern = pattern
@@ -44,8 +45,9 @@ func (n *node) insert(pattern string, parts []string, height int) {
 	}
 
 	part := parts[height]
-	child := n.matchChild(part)
+	child := n.matchChild(part) // the child node of "p" in "/p/:lang/doc" with "/p/go/doc"
 
+	// If the child node does not exist, create a new one
 	if child == nil {
 		child = &node{part: part, isWild: part[0] == ':' || part[0] == '*'}
 		n.children = append(n.children, child)
@@ -54,6 +56,7 @@ func (n *node) insert(pattern string, parts []string, height int) {
 	child.insert(pattern, parts, height + 1)
 }
 
+// 查找节点, 递归查找每一层的节点
 func (n *node) search(parts []string, height int) *node {
 	if len(parts) == height || strings.HasPrefix(n.part, "*") {
 		if n.pattern == "" {
@@ -75,6 +78,7 @@ func (n *node) search(parts []string, height int) *node {
 	return nil
 }
 
+// 查找所有节点
 func (n *node) travel(list *([]*node)) {
 	if n.pattern != "" {
 		*list = append(*list, n)
