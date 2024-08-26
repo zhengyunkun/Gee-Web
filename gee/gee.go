@@ -21,6 +21,7 @@ func New() *Engine {
 
 func (engine *Engine) addRoute(method string, pattern string, handler HandlerFunc) {
 	key := method + "-" + pattern
+	// fmt.Println(key)
 	engine.router[key] = handler
 }
 
